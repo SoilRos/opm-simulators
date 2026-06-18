@@ -81,7 +81,7 @@ template<class TypeTag>
 struct SparseMatrixAdapter<TypeTag, TTag::FlowIstlSolver>
 {
 private:
-    using Scalar = GetPropType<TypeTag, Properties::Scalar>;
+    using Scalar = GetPropType<TypeTag, Properties::LinearizerScalar>;
     enum { numEq = getPropValue<TypeTag, Properties::NumEq>() };
     using Block = MatrixBlock<Scalar, numEq, numEq>;
 

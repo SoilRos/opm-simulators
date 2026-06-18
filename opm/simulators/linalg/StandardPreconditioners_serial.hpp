@@ -178,7 +178,7 @@ struct StandardPreconditioners<Operator, Dune::Amg::SequentialInformation, typen
                 }
             });
             F::addCreator("famg", [](const O& op, const P& prm, const std::function<V()>&, std::size_t) {
-                if  constexpr (std::is_same_v<typename V::field_type, float>) {
+                if  constexpr (std::is_same_v<typename M::field_type, float>) {
                     OPM_THROW(std::logic_error, "famg requires UMFPack which is not available for floats");
                     return nullptr;
                 } else {

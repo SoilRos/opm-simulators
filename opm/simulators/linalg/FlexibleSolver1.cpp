@@ -21,8 +21,9 @@
 
 #include <opm/simulators/linalg/FlexibleSolver_impl.hpp>
 
-INSTANTIATE_FLEXIBLESOLVER(double,1)
+INSTANTIATE_FLEXIBLESOLVER(double,double,1)
 
 #if FLOW_INSTANTIATE_FLOAT
-INSTANTIATE_FLEXIBLESOLVER(float,1)
+INSTANTIATE_FLEXIBLESOLVER(float,float,1)
+INSTANTIATE_FLEXIBLESOLVER(float,double,1)
 #endif

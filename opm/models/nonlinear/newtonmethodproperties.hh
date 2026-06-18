@@ -35,6 +35,9 @@ struct NewtonMethod { using type = UndefinedProperty; };
 template<class TypeTag, class MyTypeTag>
 struct Linearizer { using type = UndefinedProperty; };
 
+template<class TypeTag, class MyTypeTag>
+struct LinearizerScalar { using type = float; };
+
 //! Specifies the type of the class which writes out the Newton convergence
 template<class TypeTag, class MyTypeTag>
 struct NewtonConvergenceWriter { using type = UndefinedProperty; };

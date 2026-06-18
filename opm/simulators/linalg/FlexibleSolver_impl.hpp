@@ -232,10 +232,10 @@ namespace Dune
                                                                                             verbosity);
 #if HAVE_SUITESPARSE_UMFPACK
                 } else if (solver_type == "umfpack") {
-                    if constexpr (std::is_same_v<typename VectorType::field_type,float>) {
+                    using MatrixType = std::remove_const_t<std::remove_reference_t<decltype(linearoperator_for_solver_->getmat())>>;
+                    if constexpr (std::is_same_v<typename MatrixType::field_type,float>) {
                         OPM_THROW(std::invalid_argument, "UMFPack cannot be used with floats");
                     } else {
-                        using MatrixType = std::remove_const_t<std::remove_reference_t<decltype(linearoperator_for_solver_->getmat())>>;
                         linsolver_ = std::make_shared<Dune::UMFPack<MatrixType>>(linearoperator_for_solver_->getmat(), verbosity, false);
                         direct_solver_ = true;
                     }
@@ -273,10 +273,10 @@ namespace Dune
     {
 #if HAVE_SUITESPARSE_UMFPACK
         if constexpr (!Opm::is_gpu_operator_v<Operator>) {
-            if constexpr (std::is_same_v<typename VectorType::field_type, float>) {
+            using MatrixType = std::remove_const_t<std::remove_reference_t<decltype(linearoperator_for_solver_->getmat())>>;
+            if constexpr (std::is_same_v<typename MatrixType::field_type, float>) {
                 OPM_THROW(std::invalid_argument, "UMFPack cannot be used with floats");
             } else {
-                using MatrixType = std::remove_const_t<std::remove_reference_t<decltype(linearoperator_for_solver_->getmat())>>;
                 linsolver_ = std::make_shared<Dune::UMFPack<MatrixType>>(linearoperator_for_solver_->getmat(), 0, false);
             }
         }
@@ -314,21 +314,21 @@ template<class Scalar, int N>
 using OBM = Dune::BCRSMatrix<Opm::MatrixBlock<Scalar, N, N>>;
 
 // Sequential operators.
-template<class Scalar, int N>
-using SeqOpM = Dune::MatrixAdapter<OBM<Scalar,N>, BV<Scalar,N>, BV<Scalar,N>>;
-template<class Scalar, int N>
-using SeqOpW = Opm::WellModelMatrixAdapter<OBM<Scalar,N>, BV<Scalar,N>, BV<Scalar,N>>;
+template<class MatrixScalar, class VectorScalar, int N>
+using SeqOpM = Dune::MatrixAdapter<OBM<MatrixScalar,N>, BV<VectorScalar,N>, BV<VectorScalar,N>>;
+template<class MatrixScalar, class VectorScalar, int N>
+using SeqOpW = Opm::WellModelMatrixAdapter<OBM<MatrixScalar,N>, BV<VectorScalar,N>, BV<VectorScalar,N>>;
 
 #if HAVE_MPI
 
 // Parallel communicator and operators.
 using Comm = Dune::OwnerOverlapCopyCommunication<int, int>;
-template<class Scalar, int N>
-using ParOpM = Opm::GhostLastMatrixAdapter<OBM<Scalar,N>, BV<Scalar,N>, BV<Scalar,N>, Comm>;
-template<class Scalar, int N>
-using ParOpW = Opm::WellModelGhostLastMatrixAdapter<OBM<Scalar,N>, BV<Scalar,N>, BV<Scalar,N>, true>;
-template<class Scalar, int N>
-using ParOpD = Dune::OverlappingSchwarzOperator<OBM<Scalar,N>, BV<Scalar,N>, BV<Scalar,N>, Comm>;
+template<class MatrixScalar, class VectorScalar, int N>
+using ParOpM = Opm::GhostLastMatrixAdapter<OBM<MatrixScalar,N>, BV<VectorScalar,N>, BV<VectorScalar,N>, Comm>;
+template<class MatrixScalar, class VectorScalar, int N>
+using ParOpW = Opm::WellModelGhostLastMatrixAdapter<OBM<MatrixScalar,N>, BV<VectorScalar,N>, BV<VectorScalar,N>, true>;
+template<class MatrixScalar, class VectorScalar, int N>
+using ParOpD = Dune::OverlappingSchwarzOperator<OBM<MatrixScalar,N>, BV<VectorScalar,N>, BV<VectorScalar,N>, Comm>;
 
 // Note: we must instantiate the constructor that is a template.
 // This is only needed in the parallel case, since otherwise the Comm type is
@@ -343,21 +343,21 @@ using ParOpD = Dune::OverlappingSchwarzOperator<OBM<Scalar,N>, BV<Scalar,N>, BV<
                        const std::function<typename __VA_ARGS__::domain_type()>& weightsCalculator, \
                        std::size_t pressureIndex);
 
-#define INSTANTIATE_FLEXIBLESOLVER(T,N)         \
-    INSTANTIATE_FLEXIBLESOLVER_OP(SeqOpM<T,N>); \
-    INSTANTIATE_FLEXIBLESOLVER_OP(SeqOpW<T,N>); \
-    INSTANTIATE_FLEXIBLESOLVER_OP(ParOpM<T,N>); \
-    INSTANTIATE_FLEXIBLESOLVER_OP(ParOpW<T,N>); \
-    INSTANTIATE_FLEXIBLESOLVER_OP(ParOpD<T,N>);
+#define INSTANTIATE_FLEXIBLESOLVER(MT,VT,N)         \
+    INSTANTIATE_FLEXIBLESOLVER_OP(SeqOpM<MT,VT,N>); \
+    INSTANTIATE_FLEXIBLESOLVER_OP(SeqOpW<MT,VT,N>); \
+    INSTANTIATE_FLEXIBLESOLVER_OP(ParOpM<MT,VT,N>); \
+    INSTANTIATE_FLEXIBLESOLVER_OP(ParOpW<MT,VT,N>); \
+    INSTANTIATE_FLEXIBLESOLVER_OP(ParOpD<MT,VT,N>);
 
 #else // HAVE_MPI
 
 #define INSTANTIATE_FLEXIBLESOLVER_OP(...) \
     template class Dune::FlexibleSolver<__VA_ARGS__>;
 
-#define INSTANTIATE_FLEXIBLESOLVER(T,N)         \
-    INSTANTIATE_FLEXIBLESOLVER_OP(SeqOpM<T,N>); \
-    INSTANTIATE_FLEXIBLESOLVER_OP(SeqOpW<T,N>);
+#define INSTANTIATE_FLEXIBLESOLVER(MT,VT,N)         \
+    INSTANTIATE_FLEXIBLESOLVER_OP(SeqOpM<MT,VT,N>); \
+    INSTANTIATE_FLEXIBLESOLVER_OP(SeqOpW<MT,VT,N>);
 
 #endif // HAVE_MPI
 

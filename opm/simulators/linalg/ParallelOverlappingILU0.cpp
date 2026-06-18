@@ -27,38 +27,39 @@
 namespace Opm
 {
 
-#define INSTANTIATE_PAR(T, Dim, ...)                                                     \
-  template class ParallelOverlappingILU0<Dune::BCRSMatrix<MatrixBlock<T,Dim,Dim>>,       \
-                                         Dune::BlockVector<Dune::FieldVector<T,Dim>>,    \
-                                         Dune::BlockVector<Dune::FieldVector<T,Dim>>,    \
+#define INSTANTIATE_PAR(MT,VT, Dim, ...)                                                     \
+  template class ParallelOverlappingILU0<Dune::BCRSMatrix<MatrixBlock<MT,Dim,Dim>>,       \
+                                         Dune::BlockVector<Dune::FieldVector<VT,Dim>>,    \
+                                         Dune::BlockVector<Dune::FieldVector<VT,Dim>>,    \
                                          __VA_ARGS__>;                                   \
-  template class ParallelOverlappingILU0<Dune::BCRSMatrix<Dune::FieldMatrix<T,Dim,Dim>>, \
-                                         Dune::BlockVector<Dune::FieldVector<T,Dim>>,    \
-                                         Dune::BlockVector<Dune::FieldVector<T,Dim>>,    \
+  template class ParallelOverlappingILU0<Dune::BCRSMatrix<Dune::FieldMatrix<MT,Dim,Dim>>, \
+                                         Dune::BlockVector<Dune::FieldVector<VT,Dim>>,    \
+                                         Dune::BlockVector<Dune::FieldVector<VT,Dim>>,    \
                                          __VA_ARGS__>;
 
 #if HAVE_MPI
-#define INSTANTIATE(T,Dim)                                                \
-    INSTANTIATE_PAR(T, Dim, Dune::Amg::SequentialInformation)             \
-    INSTANTIATE_PAR(T, Dim, Dune::OwnerOverlapCopyCommunication<int,int>)
+#define INSTANTIATE(MT,VT,Dim)                                                \
+    INSTANTIATE_PAR(MT,VT, Dim, Dune::Amg::SequentialInformation)             \
+    INSTANTIATE_PAR(MT,VT, Dim, Dune::OwnerOverlapCopyCommunication<int,int>)
 #else
-#define INSTANTIATE(T,Dim) \
-    INSTANTIATE_PAR(T, Dim, Dune::Amg::SequentialInformation)
+#define INSTANTIATE(MT,VT,Dim) \
+    INSTANTIATE_PAR(MT,VT, Dim, Dune::Amg::SequentialInformation)
 #endif
 
-#define INSTANTIATE_TYPE(T) \
-    INSTANTIATE(T,1)        \
-    INSTANTIATE(T,2)        \
-    INSTANTIATE(T,3)        \
-    INSTANTIATE(T,4)        \
-    INSTANTIATE(T,5)        \
-    INSTANTIATE(T,6)        \
-    INSTANTIATE(T,7)
+#define INSTANTIATE_TYPE(MT,VT) \
+    INSTANTIATE(MT,VT,1)        \
+    INSTANTIATE(MT,VT,2)        \
+    INSTANTIATE(MT,VT,3)        \
+    INSTANTIATE(MT,VT,4)        \
+    INSTANTIATE(MT,VT,5)        \
+    INSTANTIATE(MT,VT,6)        \
+    INSTANTIATE(MT,VT,7)
 
-INSTANTIATE_TYPE(double)
+INSTANTIATE_TYPE(double, double)
 
 #if FLOW_INSTANTIATE_FLOAT
-INSTANTIATE_TYPE(float)
+INSTANTIATE_TYPE(float, float)
+INSTANTIATE_TYPE(float, double  )
 #endif
 
 } // end namespace Opm

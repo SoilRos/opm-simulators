@@ -174,23 +174,37 @@ using CommunicationType = Dune::OwnerOverlapCopyCommunication<int,int>;
 using CommunicationType = Dune::Communication<int>;
 #endif
 
-#define INSTANTIATE_FLEX(T,Dim)                                                           \
-    template void makeOverlapRowsInvalid<BM<T,Dim>>(BM<T,Dim>&, const std::vector<int>&); \
-    template struct FlexibleSolverInfo<BM<T,Dim>,BV<T,Dim>,CommunicationType>;
+#define INSTANTIATE_OVLP(MT,Dim)                                                           \
+template void makeOverlapRowsInvalid<BM<MT,Dim>>(BM<MT,Dim>&, const std::vector<int>&);
 
-#define INSTANTIATE_TYPE(T) \
-    INSTANTIATE_FLEX(T,1)   \
-    INSTANTIATE_FLEX(T,2)   \
-    INSTANTIATE_FLEX(T,3)   \
-    INSTANTIATE_FLEX(T,4)   \
-    INSTANTIATE_FLEX(T,5)   \
-    INSTANTIATE_FLEX(T,6)   \
-    INSTANTIATE_FLEX(T,7)
+#define INSTANTIATE_OVLP_TYPE(MT) \
+    INSTANTIATE_OVLP(MT,1)   \
+    INSTANTIATE_OVLP(MT,2)   \
+    INSTANTIATE_OVLP(MT,3)   \
+    INSTANTIATE_OVLP(MT,4)   \
+    INSTANTIATE_OVLP(MT,5)   \
+    INSTANTIATE_OVLP(MT,6)   \
+    INSTANTIATE_OVLP(MT,7)   \
 
-INSTANTIATE_TYPE(double)
+#define INSTANTIATE_FLEX(MT,VT,Dim)                                                           \
+    template struct FlexibleSolverInfo<BM<MT,Dim>,BV<VT,Dim>,CommunicationType>;
+
+#define INSTANTIATE_FLEX_TYPE(MT,VT) \
+    INSTANTIATE_FLEX(MT,VT,1)   \
+    INSTANTIATE_FLEX(MT,VT,2)   \
+    INSTANTIATE_FLEX(MT,VT,3)   \
+    INSTANTIATE_FLEX(MT,VT,4)   \
+    INSTANTIATE_FLEX(MT,VT,5)   \
+    INSTANTIATE_FLEX(MT,VT,6)   \
+    INSTANTIATE_FLEX(MT,VT,7)
+
+INSTANTIATE_FLEX_TYPE(double,double)
+INSTANTIATE_OVLP_TYPE(double)
 
 #if FLOW_INSTANTIATE_FLOAT
-INSTANTIATE_TYPE(float)
+INSTANTIATE_FLEX_TYPE(float,double)
+INSTANTIATE_FLEX_TYPE(float,float)
+INSTANTIATE_OVLP_TYPE(float)
 #endif
 
 }

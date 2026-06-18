@@ -28,10 +28,11 @@
 
 namespace Opm {
 
-INSTANTIATE_PF(double, 7)
+INSTANTIATE_PF(double,double,7)
 
 #if FLOW_INSTANTIATE_FLOAT
-INSTANTIATE_PF(float, 7)
+INSTANTIATE_PF(float,double,7)
+INSTANTIATE_PF(float,float,7)
 #endif
 
 }

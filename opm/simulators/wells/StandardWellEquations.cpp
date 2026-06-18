@@ -442,6 +442,17 @@ INSTANTIATE_TYPE(double)
 
 #if FLOW_INSTANTIATE_FLOAT
 INSTANTIATE_TYPE(float)
+
+#define INSTANTIATE_MIXED_EXTRACT(T, MatrixScalar, N)                                 \
+    template void StandardWellEquations<T,BlackOilDefaultFluidSystemIndices,N>::      \
+        extract(Linear::IstlSparseMatrixAdapter<MatrixBlock<MatrixScalar,N,N>>&) const;
+
+INSTANTIATE_MIXED_EXTRACT(double, float, 1)
+INSTANTIATE_MIXED_EXTRACT(double, float, 2)
+INSTANTIATE_MIXED_EXTRACT(double, float, 3)
+INSTANTIATE_MIXED_EXTRACT(double, float, 4)
+INSTANTIATE_MIXED_EXTRACT(double, float, 5)
+INSTANTIATE_MIXED_EXTRACT(double, float, 6)
 #endif
 
 }

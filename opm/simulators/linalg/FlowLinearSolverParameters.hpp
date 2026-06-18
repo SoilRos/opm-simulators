@@ -56,7 +56,7 @@ struct FlowIstlSolverParams {};
 template<class TypeTag>
 struct LinearSolverBackend<TypeTag, TTag::FlowIstlSolverParams>
 {
-    using type = ISTLSolverRuntimeOptionProxy<TypeTag>;
+    using type = ISTLSolver<TypeTag>;
 };
 
 }

@@ -490,6 +490,20 @@ INSTANTIATE_TYPE(double)
 
 #if FLOW_INSTANTIATE_FLOAT
 INSTANTIATE_TYPE(float)
+
+#define INSTANTIATE_MIXED_EXTRACT(T, MatrixScalar, numWellEq, numEq)                           \
+    template void MultisegmentWellEquations<T,BlackOilDefaultFluidSystemIndices,numWellEq,numEq>:: \
+        extract(Linear::IstlSparseMatrixAdapter<MatrixBlock<MatrixScalar,numEq,numEq>>&) const;
+
+INSTANTIATE_MIXED_EXTRACT(double, float, 2, 1)
+INSTANTIATE_MIXED_EXTRACT(double, float, 2, 2)
+INSTANTIATE_MIXED_EXTRACT(double, float, 2, 6)
+INSTANTIATE_MIXED_EXTRACT(double, float, 3, 2)
+INSTANTIATE_MIXED_EXTRACT(double, float, 3, 3)
+INSTANTIATE_MIXED_EXTRACT(double, float, 3, 4)
+INSTANTIATE_MIXED_EXTRACT(double, float, 4, 3)
+INSTANTIATE_MIXED_EXTRACT(double, float, 4, 4)
+INSTANTIATE_MIXED_EXTRACT(double, float, 4, 5)
 #endif
 
 }
